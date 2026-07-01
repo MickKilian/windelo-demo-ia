@@ -535,31 +535,9 @@
   </div>
 </footer>
 
-<!--
-  =====================================================================
-  INTÉGRATION CHATBASE — À ACTIVER DANS UN SECOND TEMPS
-  =====================================================================
-  1. Dans Chatbase, ouvrez votre chatbot > Connect > Embed on website.
-  2. Copiez le "chatbotId" fourni par Chatbase.
-  3. Remplacez YOUR_CHATBOT_ID ci-dessous par cet identifiant.
-  4. Décommentez le script (retirez <!-- et -->).
-  Le widget apparaîtra alors sous forme de bulle flottante en bas à
-  droite de la page, par-dessus tout le reste.
-  =====================================================================
-
 <script>
-  window.embeddedChatbotConfig = {
-    chatbotId: "YOUR_CHATBOT_ID",
-    domain: "www.chatbase.co"
-  };
+(function(){if(!window.chatbase||window.chatbase("getState")!=="initialized"){window.chatbase=(...arguments)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(arguments)};window.chatbase=new Proxy(window.chatbase,{get(target,prop){if(prop==="q"){return target.q}return(...args)=>target(prop,...args)}})}const onLoad=function(){const script=document.createElement("script");script.src="https://www.chatbase.co/embed.min.js";script.id="4jU2A5Mc8CKFL9UfbELWu";script.domain="www.chatbase.co";document.body.appendChild(script)};if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}})();
 </script>
-<script
-  src="https://www.chatbase.co/embed.min.js"
-  chatbotId="YOUR_CHATBOT_ID"
-  domain="www.chatbase.co"
-  defer>
-</script>
--->
 
 </body>
 </html>
