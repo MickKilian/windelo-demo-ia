@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Windelo — Assistant IA | Démo formation</title>
+<meta name="description" content="Démo d'assistant conversationnel IA pour Windelo Catamarans — page réalisée dans le cadre d'une formation interne.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --abyss:#0B2836;
+    --ocean:#123F55;
+    --foam:#F3EFE4;
+    --chalk:#EDE7D8;
+    --seafoam:#6FA98C;
+    --ink:#16242B;
+    --ink-soft:#4A5A60;
+    --line: rgba(237,231,216,0.16);
+    --line-dark: rgba(22,36,43,0.12);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:'Inter', sans-serif;
+    color:var(--ink);
+    background:var(--foam);
+    -webkit-font-smoothing:antialiased;
+  }
+  img{max-width:100%; display:block;}
+  a{color:inherit;}
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.72rem;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+  }
+  .eyebrow::before{
+    content:"";
+    width:6px; height:6px;
+    border-radius:50%;
+    background:var(--seafoam);
+    box-shadow:0 0 0 3px rgba(111,169,140,0.25);
+  }
+  h1,h2,h3{
+    font-family:'Bricolage Grotesque', sans-serif;
+    line-height:1.05;
+    letter-spacing:-0.01em;
+  }
+  .wrap{
+    max-width:1180px;
+    margin:0 auto;
+    padding:0 32px;
+  }
+
+  /* --- badge démo --- */
+  .demo-badge{
+    position:fixed;
+    top:14px; left:50%;
+    transform:translateX(-50%);
+    z-index:200;
+    background:var(--abyss);
+    color:var(--chalk);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.68rem;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    padding:7px 16px;
+    border-radius:999px;
+    border:1px solid rgba(237,231,216,0.2);
+    box-shadow:0 6px 20px rgba(11,40,54,0.25);
+  }
+
+  /* --- header --- */
+  header{
+    position:sticky; top:0; z-index:100;
+    background:rgba(11,40,54,0.92);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:20px 32px;
+    max-width:1180px; margin:0 auto;
+  }
+  .wordmark{
+    font-family:'Bricolage Grotesque', sans-serif;
+    font-weight:700;
+    font-size:1.3rem;
+    letter-spacing:0.02em;
+    color:var(--chalk);
+  }
+  .wordmark span{color:var(--seafoam);}
+  .nav-coord{
+    color:rgba(237,231,216,0.55);
+    display:none;
+  }
+  .nav-cta{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.78rem;
+    letter-spacing:0.04em;
+    color:var(--abyss);
+    background:var(--chalk);
+    padding:10px 20px;
+    border-radius:999px;
+    text-decoration:none;
+    white-space:nowrap;
+    transition:background 0.2s ease;
+  }
+  .nav-cta:hover{background:var(--seafoam); color:var(--abyss);}
+  @media(min-width:860px){ .nav-coord{display:inline-flex;} }
+
+  /* --- hero --- */
+  .hero{
+    position:relative;
+    min-height:92vh;
+    display:flex;
+    align-items:flex-end;
+    overflow:hidden;
+    background:
+      radial-gradient(ellipse 900px 500px at 78% 8%, rgba(111,169,140,0.16), transparent 60%),
+      linear-gradient(180deg, #0A2230 0%, #0B2836 45%, #123F55 100%);
+    color:var(--chalk);
+  }
+  .hero-graphic{
+    position:absolute;
+    inset:0;
+    z-index:1;
+    pointer-events:none;
+  }
+  .hero-graphic svg{
+    width:100%; height:100%;
+    filter:drop-shadow(0 1px 4px rgba(0,0,0,0.55));
+  }
+  .hero-photo{
+    position:absolute;
+    inset:0;
+    z-index:0;
+    width:100%; height:100%;
+    object-fit:cover;
+  }
+  .hero::before{
+    content:"";
+    position:absolute; inset:0; z-index:0;
+    background:linear-gradient(180deg, #0A2230 0%, #0B2836 45%, #123F55 100%);
+    pointer-events:none;
+  }
+  .hero::after{
+    content:"";
+    position:absolute; inset:0; z-index:2;
+    background:linear-gradient(180deg, rgba(10,34,48,0.25) 0%, rgba(11,40,54,0.55) 55%, rgba(11,40,54,0.97) 100%);
+    pointer-events:none;
+  }
+  .hero-inner{ position:relative; z-index:3; }
+  .hero-inner{
+    width:100%;
+    padding:120px 32px 72px;
+    max-width:1180px;
+    margin:0 auto;
+  }
+  .hero .eyebrow{color:var(--seafoam); margin-bottom:22px;}
+  .hero h1{
+    font-size:clamp(2.6rem, 6vw, 4.6rem);
+    font-weight:600;
+    max-width:14ch;
+  }
+  .hero h1 em{
+    font-style:normal;
+    color:var(--seafoam);
+  }
+  .hero p{
+    margin-top:24px;
+    font-size:1.08rem;
+    color:rgba(237,231,216,0.82);
+    max-width:46ch;
+    line-height:1.6;
+  }
+  .hero-actions{
+    margin-top:38px;
+    display:flex;
+    gap:16px;
+    flex-wrap:wrap;
+    align-items:center;
+  }
+  .btn-primary{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.82rem;
+    letter-spacing:0.04em;
+    background:var(--seafoam);
+    color:var(--abyss);
+    text-decoration:none;
+    padding:15px 26px;
+    border-radius:999px;
+    font-weight:500;
+    transition:transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow:0 10px 30px rgba(111,169,140,0.25);
+  }
+  .btn-primary:hover{transform:translateY(-2px);}
+  .btn-ghost{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.82rem;
+    letter-spacing:0.04em;
+    color:var(--chalk);
+    text-decoration:none;
+    border:1px solid rgba(237,231,216,0.3);
+    padding:14px 24px;
+    border-radius:999px;
+  }
+  .btn-ghost:hover{border-color:var(--seafoam); color:var(--seafoam);}
+
+  /* --- value strip --- */
+  .values{
+    background:var(--abyss);
+    padding:0 0 88px;
+  }
+  .values-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(230px,1fr));
+    gap:1px;
+    background:var(--line);
+    border:1px solid var(--line);
+    border-radius:14px;
+    overflow:hidden;
+  }
+  .value-card{
+    background:var(--ocean);
+    padding:32px 28px;
+    color:var(--chalk);
+  }
+  .value-card .tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.7rem;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--seafoam);
+  }
+  .value-card h3{
+    margin-top:14px;
+    font-size:1.3rem;
+    font-weight:600;
+  }
+  .value-card p{
+    margin-top:10px;
+    font-size:0.92rem;
+    line-height:1.55;
+    color:rgba(237,231,216,0.72);
+  }
+
+  /* --- philosophie --- */
+  .philosophy{
+    padding:100px 0;
+    background:var(--foam);
+  }
+  .philo-grid{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:56px;
+    align-items:center;
+  }
+  @media(min-width:900px){ .philo-grid{grid-template-columns:0.9fr 1.1fr;} }
+  .philo-graphic{
+    border-radius:16px;
+    aspect-ratio:4/5;
+    background:linear-gradient(160deg, var(--abyss) 0%, var(--ocean) 100%);
+    position:relative;
+    overflow:hidden;
+  }
+  .philo-graphic svg{
+    position:absolute; inset:0;
+    width:100%; height:100%;
+    z-index:1;
+    pointer-events:none;
+    filter:drop-shadow(0 1px 4px rgba(0,0,0,0.55));
+  }
+  .philo-photo{
+    position:absolute;
+    inset:0;
+    z-index:0;
+    width:100%; height:100%;
+    object-fit:cover;
+  }
+  .philosophy .eyebrow{color:var(--ocean); margin-bottom:18px;}
+  .philosophy h2{
+    font-size:clamp(1.9rem, 3.6vw, 2.6rem);
+    font-weight:600;
+    color:var(--abyss);
+    max-width:16ch;
+  }
+  .philosophy .quote{
+    margin-top:26px;
+    font-size:1.08rem;
+    line-height:1.7;
+    color:var(--ink-soft);
+    max-width:52ch;
+  }
+  .philosophy .quote strong{color:var(--ink); font-weight:600;}
+  .philosophy .signature{
+    margin-top:22px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.78rem;
+    letter-spacing:0.04em;
+    color:var(--ocean);
+  }
+
+  /* --- chat demo / cockpit panel --- */
+  .cockpit{
+    padding:100px 0 130px;
+    background:var(--abyss);
+    color:var(--chalk);
+  }
+  .cockpit-head{
+    text-align:center;
+    max-width:640px;
+    margin:0 auto 56px;
+  }
+  .cockpit-head .eyebrow{color:var(--seafoam); justify-content:center; margin-bottom:18px;}
+  .cockpit-head h2{
+    font-size:clamp(1.9rem, 3.6vw, 2.5rem);
+    font-weight:600;
+  }
+  .cockpit-head p{
+    margin-top:16px;
+    color:rgba(237,231,216,0.68);
+    font-size:1rem;
+    line-height:1.6;
+  }
+  .panel{
+    max-width:640px;
+    margin:0 auto;
+    background:var(--ocean);
+    border:1px solid rgba(237,231,216,0.14);
+    border-radius:18px;
+    overflow:hidden;
+    box-shadow:0 30px 60px rgba(0,0,0,0.3);
+  }
+  .panel-bar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:16px 22px;
+    border-bottom:1px solid rgba(237,231,216,0.12);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.72rem;
+    letter-spacing:0.06em;
+    color:rgba(237,231,216,0.6);
+  }
+  .panel-bar .dot{color:var(--seafoam);}
+  .panel-body{
+    padding:26px 22px;
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+  }
+  .msg{
+    max-width:80%;
+    padding:12px 16px;
+    border-radius:14px;
+    font-size:0.92rem;
+    line-height:1.5;
+  }
+  .msg.user{
+    align-self:flex-end;
+    background:var(--seafoam);
+    color:var(--abyss);
+    border-bottom-right-radius:4px;
+  }
+  .msg.bot{
+    align-self:flex-start;
+    background:rgba(237,231,216,0.08);
+    color:var(--chalk);
+    border-bottom-left-radius:4px;
+    border:1px solid rgba(237,231,216,0.1);
+  }
+  .panel-foot{
+    padding:16px 22px 22px;
+    border-top:1px solid rgba(237,231,216,0.12);
+  }
+  .panel-note{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.7rem;
+    letter-spacing:0.03em;
+    color:rgba(237,231,216,0.45);
+    text-align:center;
+    line-height:1.6;
+  }
+  .panel-note code{
+    color:var(--seafoam);
+    background:rgba(111,169,140,0.1);
+    padding:2px 6px;
+    border-radius:4px;
+  }
+
+  /* --- footer --- */
+  footer{
+    background:var(--foam);
+    padding:44px 0 34px;
+    border-top:1px solid var(--line-dark);
+  }
+  .foot-inner{
+    display:flex;
+    flex-wrap:wrap;
+    gap:16px;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .foot-inner .wordmark{color:var(--abyss);}
+  .foot-inner .wordmark span{color:var(--ocean);}
+  footer p{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.72rem;
+    color:var(--ink-soft);
+    letter-spacing:0.02em;
+  }
+</style>
+</head>
+<body>
+
+<div class="demo-badge">Démo interne — Formation IA Windelo</div>
+
+<header>
+  <div class="nav">
+    <div class="wordmark">WINDELO<span>.</span></div>
+    <div class="nav-coord eyebrow">47°39'N · 2°45'W — Vannes, France</div>
+    <a class="nav-cta" href="#assistant">Tester l'assistant IA →</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-graphic" aria-hidden="true">
+    <svg viewBox="0 0 1200 800" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
+      <!-- tracé de navigation en pointillés, en surimpression sur la photo -->
+      <path d="M -50 620 C 250 560, 480 660, 720 520 S 1150 420, 1300 470"
+            fill="none" stroke="#6FA98C" stroke-width="2.5" stroke-dasharray="2 10" stroke-linecap="round" opacity="0.9"/>
+      <circle cx="-50" cy="620" r="5" fill="#EDE7D8" opacity="0.85"/>
+      <circle cx="720" cy="520" r="5" fill="#6FA98C"/>
+      <circle cx="720" cy="520" r="12" fill="none" stroke="#6FA98C" stroke-width="1.5" opacity="0.6"/>
+      <text x="742" y="512" fill="#EDE7D8" fill-opacity="0.75" font-family="IBM Plex Mono, monospace" font-size="12" letter-spacing="1">47°39'N 2°45'W</text>
+    </svg>
+  </div>
+  <img class="hero-photo" src="images/hero-catamaran.webp" alt="Catamaran Windelo en navigation"
+       onerror="this.style.display='none'">
+  <div class="hero-inner">
+    <div class="eyebrow">Assistant IA — Windelo Catamarans</div>
+    <h1>Posez le cap. <em>On répond à vos questions</em>, en temps réel.</h1>
+    <p>Un assistant conversationnel entraîné sur l'univers Windelo — gammes, éco-conception, propulsion électrique, personnalisation — pour accompagner chaque visiteur, à toute heure, avant même le premier échange avec l'équipe.</p>
+    <div class="hero-actions">
+      <a class="btn-primary" href="#assistant">Discuter avec l'assistant</a>
+      <a class="btn-ghost" href="#philosophie">Découvrir la démarche</a>
+    </div>
+  </div>
+</section>
+
+<section class="values">
+  <div class="wrap">
+    <div class="values-grid">
+      <div class="value-card">
+        <div class="tag">Multicoques</div>
+        <h3>Gammes 50 à 62</h3>
+        <p>Adventure, Yachting, Sport — l'assistant oriente chaque visiteur vers l'univers qui correspond à son projet de navigation.</p>
+      </div>
+      <div class="value-card">
+        <div class="tag">Ocean Future</div>
+        <h3>Éco-conception</h3>
+        <p>Matériaux recyclés et biosourcés, propulsion électrique : l'assistant explique la démarche avec précision et sans jargon.</p>
+      </div>
+      <div class="value-card">
+        <div class="tag">Autonomie</div>
+        <h3>Énergie à bord</h3>
+        <p>Solaire, hydro-génération, éolien — les réponses techniques les plus fréquentes traitées en quelques secondes.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="philosophy" id="philosophie">
+  <div class="wrap">
+    <div class="philo-grid">
+      <div class="philo-graphic" role="img" aria-label="Photo catamaran Windelo avec tracé de navigation">
+        <img class="philo-photo" src="images/philosophy-catamaran.webp" alt="Catamaran Windelo, esprit de navigation"
+             onerror="this.style.display='none'">
+        <svg viewBox="0 0 400 500" xmlns="http://www.w3.org/2000/svg">
+          <path d="M 30 420 C 90 380, 130 300, 110 220 C 95 160, 140 110, 210 90 C 280 70, 320 110, 350 60"
+                fill="none" stroke="#6FA98C" stroke-width="2.5" stroke-dasharray="2 9" stroke-linecap="round" opacity="0.9"/>
+          <circle cx="30" cy="420" r="5" fill="#6FA98C"/>
+          <circle cx="350" cy="60" r="5" fill="#EDE7D8"/>
+          <circle cx="350" cy="60" r="12" fill="none" stroke="#EDE7D8" stroke-width="1.5" opacity="0.55"/>
+          <text x="40" y="450" fill="#EDE7D8" fill-opacity="0.85" font-family="IBM Plex Mono, monospace" font-size="11" letter-spacing="1">DÉPART</text>
+          <text x="235" y="45" fill="#EDE7D8" fill-opacity="0.85" font-family="IBM Plex Mono, monospace" font-size="11" letter-spacing="1">CAP</text>
+        </svg>
+      </div>
+      <div>
+        <div class="eyebrow">Pourquoi cette démo</div>
+        <h2>Le premier point de contact, avant même le contact.</h2>
+        <p class="quote">Un futur client qui arrive sur le site à 23h avec une question précise sur l'autonomie énergétique ou la configuration des cabines ne devrait jamais attendre le lendemain pour une première réponse. <strong>L'assistant IA agit comme un membre d'équipage disponible en continu</strong> — il qualifie la demande, répond aux questions courantes et relaie vers l'équipe commerciale quand le sujet le demande.</p>
+        <div class="signature">— Page de démonstration, formation IA interne</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cockpit" id="assistant">
+  <div class="wrap">
+    <div class="cockpit-head">
+      <div class="eyebrow">Poste de pilotage</div>
+      <h2>L'assistant, tel qu'il apparaîtra sur le site</h2>
+      <p>Aperçu du type d'échange que l'assistant pourra tenir une fois connecté. Le widget Chatbase réel (bulle de discussion en bas à droite) sera branché à cette page dans un second temps.</p>
+    </div>
+
+    <div class="panel">
+      <div class="panel-bar">
+        <span><span class="dot">●</span> Assistant Windelo — en ligne</span>
+        <span>Aperçu</span>
+      </div>
+      <div class="panel-body">
+        <div class="msg user">Quelle est l'autonomie électrique du Windelo 54 au mouillage ?</div>
+        <div class="msg bot">Le Windelo 54 combine panneaux solaires, hydro-génération et éolien pour une autonomie énergétique pensée pour le mouillage prolongé, sans recours au moteur thermique. Souhaitez-vous les détails techniques ou être mis en relation avec un conseiller ?</div>
+        <div class="msg user">Quelle différence entre les versions Adventure et Yachting ?</div>
+        <div class="msg bot">Adventure privilégie simplicité et robustesse pour l'exploration ; Yachting mise sur l'élégance et le confort de vie à bord. Les deux partagent la même architecture éco-conçue et le cockpit avant signature Windelo.</div>
+      </div>
+      <div class="panel-foot">
+        <p class="panel-note">Zone d'intégration du widget Chatbase — remplacer <code>YOUR_CHATBOT_ID</code> dans le code source pour activer l'assistant en direct.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-inner">
+    <div class="wordmark">WINDELO<span>.</span></div>
+    <p>Page de démonstration réalisée dans le cadre d'une formation IA — non liée au site officiel windelo-catamaran.com</p>
+  </div>
+</footer>
+
+<!--
+  =====================================================================
+  INTÉGRATION CHATBASE — À ACTIVER DANS UN SECOND TEMPS
+  =====================================================================
+  1. Dans Chatbase, ouvrez votre chatbot > Connect > Embed on website.
+  2. Copiez le "chatbotId" fourni par Chatbase.
+  3. Remplacez YOUR_CHATBOT_ID ci-dessous par cet identifiant.
+  4. Décommentez le script (retirez <!-- et -->).
+  Le widget apparaîtra alors sous forme de bulle flottante en bas à
+  droite de la page, par-dessus tout le reste.
+  =====================================================================
+
+<script>
+  window.embeddedChatbotConfig = {
+    chatbotId: "YOUR_CHATBOT_ID",
+    domain: "www.chatbase.co"
+  };
+</script>
+<script
+  src="https://www.chatbase.co/embed.min.js"
+  chatbotId="YOUR_CHATBOT_ID"
+  domain="www.chatbase.co"
+  defer>
+</script>
+-->
+
+</body>
+</html>
